@@ -1,3 +1,11 @@
+/*!
+ * @file health_checking_arduino.ino
+ * @brief testing code for checking the data coming in is okay or not 
+ * @author [Nay Chi]
+ * @version  V1.0
+ * @date  2024-11-25
+ * @url https://github.com/NayChi23/Cow_project
+ */
 #include <SPI.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
