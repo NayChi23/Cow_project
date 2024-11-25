@@ -1,3 +1,12 @@
+/*!
+ * @file health_checking_c_code.c
+ * @brief code that can give you output 1 or 0 depending on the result of the sensor
+ *
+ * @author [Nay Chi]
+ * @version  V1.0
+ * @date  2024-11-25
+ * @url https://github.com/NayChi23/Cow_project
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
