@@ -12,10 +12,11 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define MAX_COLS 7
-#define MAX_ROWS 2 //180 for the estrus and it will take 18 round to get one data which is equalivalent to 4 hours
-#define MAX_FIELD_LENGTH 50
+#define MAX_COLS 6
+#define MAX_ROWS 200
 #define MAX_SIZE 3
+
+unsigned int row = 0, col = 0;
 
 // Define the node structure for a doubly linked list
 struct Node {
@@ -46,33 +47,22 @@ void insertAtEnd(struct Node** head, int data) {
     newNode->prev = temp;
 }
 
-// Function to print the list from the given node to the end
-void printList(struct Node* node) {
-    while (node != NULL) {
-        printf("%d ", node->data);
-        node = node->next;
-    }
-    printf("\n");
-}
-// Function to delete every node in the list
 void deleteList(struct Node** head) {
     struct Node* temp = *head;
     struct Node* nextNode;
-
     while (temp != NULL) {
         nextNode = temp->next;
         free(temp);
         temp = nextNode;
     }
-
     *head = NULL;
 }
 
 struct CircularQueue {
-    int* arr; // Array to store queue elements
-    int front, rear; // Front and rear pointers
-    int capacity; // Maximum capacity of the queue
-    int size; // Current number of elements in the queue
+    int* arr;
+    int front, rear;
+    int capacity;
+    int size;
 };
 
 struct CircularQueue* createQueue(int capacity) {
@@ -83,6 +73,7 @@ struct CircularQueue* createQueue(int capacity) {
     queue->size = 0;
     return queue;
 }
+
 int isEmpty(struct CircularQueue* queue) {
     return queue->size == 0;
 }
@@ -93,7 +84,6 @@ void enqueue(struct CircularQueue* queue, int item) {
     queue->rear = (queue->rear + 1) % queue->capacity;
     queue->arr[queue->rear] = item;
     queue->size++;
-    //printf("%d enqueued to queue\n", item);
 }
 
 int dequeue(struct CircularQueue* queue) {
@@ -106,158 +96,95 @@ int dequeue(struct CircularQueue* queue) {
     return item;
 }
 
-void printQueue(struct CircularQueue* queue) {
-    if (isEmpty(queue)) {
-        printf("Queue is empty\n");
-        return;
-    }
-    printf("Elements of the queue are: ");
-    int i = queue->front;
-    do {
-        printf("%d ", queue->arr[i]);
-        i = (i + 1) % queue->capacity;
-    } while (i != (queue->rear + 1) % queue->capacity);
-    printf("\n");
-}
-int indexFinding(struct CircularQueue* queue, int no){
+int indexFinding(struct CircularQueue* queue, int no) {
     int i = queue->front;
     int count = 0;
-    while (count <queue->size)
-    {
-        if(count == no)
-        {
+    while (count < queue->size) {
+        if (count == no) {
             return queue->arr[i];
-            break;
         }
         i = (i + 1) % queue->capacity;
         count++;
     }
+    return -1; // Fallback, should not occur
 }
 
-int Health(float,float,float,float,float,float);
+int Health(float, float, float, float, float, float);
 int CompareData(int, int, int);
 
-int main(){
-    unsigned int numberZero =0; //only reset to 0 if the data are equal to one day
-    unsigned int numberOne =0;  //Store how many 1's in the data
-    unsigned int num=0;
+int main() {
+    unsigned int numberZero = 0;
+    unsigned int numberOne = 0;
+    unsigned int num = 0;
     bool FirstTurn = 1;
     unsigned int check_First_two_day = 0;
-    //unsigned long int total_one_day_count[3] = {0,0,0};
+
     struct CircularQueue* total_one_day_count = createQueue(MAX_SIZE);
     struct Node* result_data = NULL;
 
-    while(1){
-        //For this i would like to use cicular queue for pushing the data 240 data
-        char field[MAX_ROWS][MAX_COLS][MAX_FIELD_LENGTH] = {
-            {"15:34:52,0.02,0.88,-0.3,-28.39,-21.01,-29.82"},
-            {"15:34:52,-0.05,-0.17,0.79,-21.53,-23.01,21.22"}
-            //May be add the number later according to the data
-        };
-        if(num == 108 && FirstTurn  == 1)
-        {
-            //need condition to put it into the double linked list array
-            enqueue(total_one_day_count,numberOne);
-            printf("the total number one is %d\n", numberOne);
-            numberOne = 0 ;
-            numberZero = 0 ;
-            num = 0;
-            check_First_two_day += 1;
-            printf("Complete %d turn \n", check_First_two_day);
-            printQueue(total_one_day_count);
-            
-            if(check_First_two_day == 3)
-            {
-                FirstTurn = 0;
-                printf("The result of compared data is\t%d\n",CompareData(indexFinding(total_one_day_count,0),indexFinding(total_one_day_count,1),indexFinding(total_one_day_count,2)));
-                insertAtEnd(&result_data, CompareData(indexFinding(total_one_day_count,0),indexFinding(total_one_day_count,1),indexFinding(total_one_day_count,2)));
-                printf("%d\n",indexFinding(total_one_day_count,0));
-                printf("%d\n",indexFinding(total_one_day_count,1));
-                printf("%d\n",indexFinding(total_one_day_count,2));
-            }
-            
-        }        
-        else if(num == 108 && FirstTurn  == 0){
-            dequeue(total_one_day_count);
-            printQueue(total_one_day_count);
-            enqueue(total_one_day_count,numberOne);
-            printQueue(total_one_day_count);
-            printf("The result of compared data is\t%d\n",CompareData(indexFinding(total_one_day_count,0),indexFinding(total_one_day_count,1),indexFinding(total_one_day_count,2)));
-            insertAtEnd(&result_data, CompareData(indexFinding(total_one_day_count,0),indexFinding(total_one_day_count,1),indexFinding(total_one_day_count,2)));
-            printf("%d\n",indexFinding(total_one_day_count,0));
-            printf("%d\n",indexFinding(total_one_day_count,1));
-            printf("%d\n",indexFinding(total_one_day_count,2));
-            numberOne = 0 ;
-            numberZero = 0 ;
-            num = 0;
-            break;
-        }
-        else{
-        unsigned int row = 0, col = 0, b=0;
+    while (1) {
+        float field[MAX_ROWS][MAX_COLS];
 
-        char tempoarray[MAX_COLS][MAX_FIELD_LENGTH];
-        while(row<MAX_ROWS && field[row][0][0] != '\0'){
-            col = 0; // Reset col for each row
-            char* token = strtok(field[row][col], ",");
+        if (num == 108 && FirstTurn == 1) {
+            enqueue(total_one_day_count, numberOne);
+            numberOne = 0;
+            numberZero = 0;
+            num = 0;
+            check_First_two_day++;
+
+            if (check_First_two_day == 3) {
+                FirstTurn = 0;
+                insertAtEnd(&result_data, CompareData(indexFinding(total_one_day_count, 0),
+                                                     indexFinding(total_one_day_count, 1),
+                                                     indexFinding(total_one_day_count, 2)));
+            }
+        } else if (num == 108 && FirstTurn == 0) {
+            dequeue(total_one_day_count);
+            enqueue(total_one_day_count, numberOne);
+            insertAtEnd(&result_data, CompareData(indexFinding(total_one_day_count, 0),
+                                                 indexFinding(total_one_day_count, 1),
+                                                 indexFinding(total_one_day_count, 2)));
+            numberOne = 0;
+            numberZero = 0;
+            num = 0;
+        } else {
+            row = 0;
+            col = 0;            
+            for( int a= 0;a<MAX_ROWS;a++){
+                col = 0;
+                // your data which format you wanna put here lik ax,ay,az
+            }
             
-            while (token != NULL && col < MAX_COLS) {
-                strcpy(tempoarray[col], token);
-                token = strtok(NULL, ",");
-                col +=1;
+            //char tempoarray[MAX_COLS][MAX_FIELD_LENGTH];
+            while (row < MAX_ROWS && field[row][0] != '\0') {
+                col = 0;
+                float ax,ay,az,gx,gy,gz;
+                ax = field[row][0];
+                ay = field[row][1];
+                az = field[row][2];
+                gx = field[row][3];
+                gy = field[row][4];
+                gz = field[row][5];
+                
+                if (Health(ax, ay, az, gx, gy, gz) == 1 || Health(ax, ay, az, gx, gy, gz) == 2) {
+                    numberOne++;
+                } else {
+                    numberZero++;
+                }
+                row++;
             }
-            // Display the items in the row
-            /*for (b = 0; b < col; b++) {
-                printf("%s\t", tempoarray[b]);
-            }
-            printf("\n"); // Newline after each row
-            */
-            row++;
-            float ax,ay,az,gx,gy,gz;
-            ax = atof(tempoarray[1]);
-            ay = atof(tempoarray[2]);
-            az = atof(tempoarray[3]);
-            gx = atof(tempoarray[4]);
-            gy = atof(tempoarray[5]);
-            gz = atof(tempoarray[6]);
-            //printf("%.2f %.2f %.2f %.2f %.2f %.2f\n",ax,ay,az,gx,gy,gz);
-            //printf("%d\n",Estreus(ax,ay,az,gx,gy,gz));
-			if (Health(ax,ay,az,gx,gy,gz)==1 || Health(ax,ay,az,gx,gy,gz)==2){
-				numberOne = numberOne +1;
-			}
-            else{
-                numberZero = numberZero +1;
-            }
-			//printf("%d\n",Ruminating(ax,ay,az,gx,gy,gz));
-            
-        }
-        num +=1;
-        //printf("row number is %u\n",row);
-        printf("the total loop number is %u\n",num);
+            num++;
         }
     }
     return 0;
 }
 
 int CompareData(int firstDay, int secondDay, int thirdDay) {
-  /*if (firstDay > (secondDay + (0.1 * secondDay))) {  // 10% more
-    if (secondDay > (thirdDay + (0.1 * thirdDay))) {
-      return 1; //Warning
-    } else {
-      return -1; //Warning
+    if (firstDay > (secondDay + (0.1 * secondDay))) {
+        return 1;
     }
-  } else {
-    return 0; //OK
-    //But have to ask the condition first
-  }*/
- if (firstDay > (secondDay + (0.1 * secondDay))) {  // 10% more
-      return 1; //Warning
-    } 
-else {
-    return 0; //OK
-    //But have to ask the condition first
-  }
+    return 0;
 }
-//RUMINATING and Sitting 
 int Health(float Ax,float Ay,float Az,float Gx,float Gy,float Gz){
 float AxXGx = Ax * Gx, AyXAz = Ay * Az, AxXGy = Ax * Gy, AxXGz = Ax * Gz, AxXAy = Ax * Ay, AxXAz = Ax * Az, AyXAx = Ay * Ax, AyXGx = Ay * Gx, AyXGy = Ay * Gy, AyXGz = Ay * Gz, AzXAx = Az * Ax, AzXAy = Az * Ay, AzXGx = Az * Gx, AzxGy = Az * Gy, AzXGz = Az * Gz, Ax_squared = Ax * Ax, Ay_squared = Ay * Ay, Az_squared = Az * Az, Gx_squared = Gx * Gx, Gy_squared = Gy * Gy, Gz_squared = Gz * Gz, GxXGz = Gx * Gz, GxXGy = Gx * Gy, GyXGz = Gy * Gz, AzXGy = Az * Gy;
 	if ( Az <= 1.05) {
